@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.18;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
+contract RJCoin is ERC20 {
+    address public owner;
+
+    // For demo
+    uint256 public constant MAX_SUPPLY = 100000; // Max supply set to 100000
+
+ 
+    
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner is allowed to initiate this function");
+        _;
+    }
+
+    constructor(uint256 initialSupply) ERC20("RJ Coin", "CRJ") {
+        _mint(msg.sender, initialSupply);
+        owner = msg.sender;
+    }
+
+    function transfer(address to, uint256 value) public override returns (bool) {
+        _transfer(msg.sender, to, value);
+        return true;
+    }
+   
+   
+    function mint(address to, uint256 value) external onlyOwner validateMint(value) {
+        _mint(to, value);
+    }
+
+
+    function burn(uint256 value) external {
+        _burn(msg.sender, value);
+    }
+
+
+       modifier validateMint(uint256 value) {
+        require(totalSupply() + value <= MAX_SUPPLY, "Exceeds maximum supply");
+        _;
+    }
+}
